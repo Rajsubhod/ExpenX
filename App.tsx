@@ -1,13 +1,33 @@
 import RootLayout from "@app/RootLayout";
+import { ThemeProvider, useTheme } from "@components/ThemeContext";
+import Welcome from "@screens/Welcome";
 import { SafeAreaView, StatusBar, StyleSheet } from "react-native";
 
 
+function AppContent() {
+  const { isDarkMode } = useTheme();
+
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? '#000' : '#fff',
+  };
+
+  return (
+    <SafeAreaView style={[styles.container]}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={backgroundStyle.backgroundColor}
+      />
+      <Welcome />
+      {/* <RootLayout /> */}
+    </SafeAreaView>
+  );
+}
+
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor={styles.container.backgroundColor} barStyle="dark-content" />
-      <RootLayout />
-    </SafeAreaView>
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 

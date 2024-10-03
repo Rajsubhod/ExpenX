@@ -1,22 +1,22 @@
-import {View, StyleSheet} from 'react-native';
-import React from 'react';
+import { View, StyleSheet } from 'react-native'
+import React from 'react'
 import { useTheme } from '@components/ThemeContext';
 import CustomText from '@components/CustomText';
 
-const Home = () => {
+const Setting = () => {
   const {isDarkMode} = useTheme();
   const viewColor = isDarkMode ? '#000' : '#fff';
   return (
-    <View style={[styles.home, {backgroundColor : viewColor}]}>
-      <CustomText >Home Screen</CustomText>
+    <View style={[styles.setting, {backgroundColor : viewColor}]}>
+      <CustomText >Setting Screen</CustomText>
     </View>
   );
 };
 
-export default Home;
+export default Setting;
 
 const styles = StyleSheet.create({
-    home: {
+    setting: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',

@@ -1,4 +1,4 @@
-import {View, Text, Image, StyleSheet} from 'react-native';
+import {View, Image, StyleSheet} from 'react-native';
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -7,7 +7,9 @@ import IonIcons from 'react-native-vector-icons/Ionicons';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 
 import Home from '@screens/Home';
-import Profile from '@screens/Profile';
+import { useTheme } from '@components/ThemeContext';
+import CustomText from '@components/CustomText';
+import Setting from '@screens/Setting';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -16,26 +18,45 @@ const AppIcon = () => (
   <Image
     source={require('../assets/accounting_light.png')}
     style={{width: 40, height: 40, marginRight: 10}}
+    tintColor={'tomato'}
   />
 );
 
 const RootLayout = () => {
+
+  const {isDarkMode} = useTheme();
+
   return (
     <NavigationContainer>
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={({route}) => ({
+          tabBarActiveTintColor: 'tomato',
+          tabBarStyle: {
+            height: 65, 
+            paddingBottom: 10,
+            // backgroundColor: 'orange',
+            elevation: 10,
+            shadowOpacity: 0,
+            borderTopWidth: 0,
+            backgroundColor: isDarkMode ? '#000' : '#fff',
+          },
+          
           headerTitle: ({children}) => (
             <View style={styles.screenHeader}>
-              <AppIcon />
-              <Text style={styles.headerTitleText}>{children}</Text>
+              <AppIcon/>
+              <CustomText style={styles.headerTitleText}>{children}</CustomText>
             </View>
           ),
           headerStyle: {
             // backgroundColor: '#f4511e',
             height: 70,
+            elevation: 0,
+            shadowOpacity: 0,
+            backgroundColor: isDarkMode ? '#000' : '#fff',
           },
-        })}>
+        })}
+        >
         <Tab.Screen
           name="Home"
           component={Home}
@@ -47,10 +68,10 @@ const RootLayout = () => {
           }}
         />
         <Tab.Screen
-          name="Profile"
-          component={Profile}
+          name="Setting"
+          component={Setting}
           options={{
-            tabBarLabel: 'Profile',
+            tabBarLabel: 'Setting',
             tabBarIcon: ({color, size}) => (
               <IonIcons
                 name="settings-outline"
