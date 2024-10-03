@@ -19,7 +19,7 @@ const Welcome = () => {
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme}}>
       <AppIcon />
       <CustomText style={styles.text}> Welcome! Manage Your</CustomText>
-      <CustomText style={{fontSize: 25, color: 'tomato', paddingBottom: 200}}> Finances</CustomText>
+      <CustomText style={{fontSize: 25, color: 'tomato', paddingBottom: 200}}>Finances</CustomText>
       <WelcomeButton />
     </View>
   );

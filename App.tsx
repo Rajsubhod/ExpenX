@@ -1,6 +1,7 @@
 import RootLayout from "@app/RootLayout";
 import { ThemeProvider, useTheme } from "@components/ThemeContext";
 import Welcome from "@screens/Welcome";
+import Signup from "@screens/Signup";
 import { SafeAreaView, StatusBar, StyleSheet } from "react-native";
 
 
@@ -17,8 +18,9 @@ function AppContent() {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <Welcome />
-      {/* <RootLayout /> */}
+      {/* TODO: Make Authentication Context */}
+      {/* { isAuthenticated ? <Welcome /> : <RootLayout /> } */}
+      <Signup />
     </SafeAreaView>
   );
 }
