@@ -1,15 +1,20 @@
-import {Image, TextInput, StyleSheet, View, Touchable, TouchableOpacity} from 'react-native';
-import React from 'react';
+import {
+  Image,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Keyboard,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import CustomText from '@components/CustomText';
 import {useTheme} from '@components/ThemeContext';
-import WelcomeButton from '@components/WelcomeButton';
 import CustomInput from '@components/CustomInput';
 import SubmitButton from '@components/SubmitButton';
 
 const AppIcon = () => (
   <Image
     source={require('../assets/accounting_light.png')}
-    style={{width: 80, height: 80, marginRight: 10, marginBottom: 50}}
+    style={{width: 80, height: 80, marginRight: -10, marginBottom: 50}}
     tintColor={'tomato'}
   />
 );
@@ -71,15 +76,17 @@ const SignUp = () => {
           onChange={handleInputChange}
           isSecure={true}
         />
-        <SubmitButton onPress={handleSubmit} />
+        <SubmitButton onPress={handleSubmit}>Sign Up</SubmitButton>
       </View>
       <View style={styles.loginContainer}>
-          <CustomText style={{color: 'gray'}}>Already have an account?</CustomText>
-          {/* TODO: Add navigation to Login screen */}
-          <TouchableOpacity onPress={() => console.log('Navigate to Login')}>
-            <CustomText style={styles.loginText}>Login</CustomText>
-          </TouchableOpacity>
-        </View>
+        <CustomText style={{color: 'gray'}}>
+          Already have an account?
+        </CustomText>
+        {/* TODO: Add navigation to Login screen */}
+        <TouchableOpacity onPress={() => console.log('Navigate to Login')}>
+          <CustomText style={styles.loginText}>Login</CustomText>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -121,6 +128,6 @@ const styles = StyleSheet.create({
   },
   loginText: {
     color: 'tomato',
-    paddingLeft: 10
+    paddingLeft: 10,
   },
 });

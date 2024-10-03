@@ -8,7 +8,7 @@ import SubmitButton from '@components/SubmitButton';
 const AppIcon = () => (
   <Image
     source={require('../assets/accounting_light.png')}
-    style={{width: 80, height: 80, marginRight: 10, marginBottom: 50}}
+    style={{width: 80, height: 80, marginRight: -10, marginBottom: 50}}
     tintColor={'tomato'}
   />
 );

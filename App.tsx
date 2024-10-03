@@ -2,6 +2,7 @@ import RootLayout from "@app/RootLayout";
 import { ThemeProvider, useTheme } from "@components/ThemeContext";
 import Welcome from "@screens/Welcome";
 import Signup from "@screens/Signup";
+import Login from "@screens/Login";
 import { SafeAreaView, StatusBar, StyleSheet } from "react-native";
 
 
@@ -20,7 +21,7 @@ function AppContent() {
       />
       {/* TODO: Make Authentication Context */}
       {/* { isAuthenticated ? <Welcome /> : <RootLayout /> } */}
-      <Signup />
+      <Login />
     </SafeAreaView>
   );
 }
