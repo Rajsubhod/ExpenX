@@ -1,4 +1,4 @@
-import {Image, TextInput, StyleSheet, View} from 'react-native';
+import {Image, TextInput, StyleSheet, View, Touchable, TouchableOpacity} from 'react-native';
 import React from 'react';
 import CustomText from '@components/CustomText';
 import {useTheme} from '@components/ThemeContext';
@@ -23,16 +23,31 @@ const SignUp = () => {
 
   const handleInputChange = (name, value) => {
     setFormValues({
-      ...formValues, 
-      [name]: value
+      ...formValues,
+      [name]: value,
     });
-  }
+  };
+
+  const handleSubmit = () => {
+    console.log('Form submitted with values:', formValues);
+    // Handle form submission
+
+    // Clear form values
+    setFormValues({
+      username: '',
+      email: '',
+      password: '',
+    });
+  };
 
   const {isDarkMode} = useTheme();
   const theme = isDarkMode ? '#000' : '#fff';
   return (
     <View style={[styles.container, {backgroundColor: theme}]}>
       <AppIcon />
+      <CustomText style={{fontSize: 24, fontWeight: 'bold', color: 'gray'}}>
+        Sign Up
+      </CustomText>
       <View style={styles.form}>
         <CustomInput
           style={styles.input}
@@ -56,8 +71,15 @@ const SignUp = () => {
           onChange={handleInputChange}
           isSecure={true}
         />
-        <SubmitButton />
+        <SubmitButton onPress={handleSubmit} />
       </View>
+      <View style={styles.loginContainer}>
+          <CustomText style={{color: 'gray'}}>Already have an account?</CustomText>
+          {/* TODO: Add navigation to Login screen */}
+          <TouchableOpacity onPress={() => console.log('Navigate to Login')}>
+            <CustomText style={styles.loginText}>Login</CustomText>
+          </TouchableOpacity>
+        </View>
     </View>
   );
 };
@@ -91,5 +113,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 10,
     color: '#000',
+  },
+  loginContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  loginText: {
+    color: 'tomato',
+    paddingLeft: 10
   },
 });

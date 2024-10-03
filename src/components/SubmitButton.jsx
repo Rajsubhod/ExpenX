@@ -4,7 +4,7 @@ import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import { useTheme } from './ThemeContext';
 import CustomText from './CustomText';
 
-const SubmitButton = ({navigation}) => {
+const SubmitButton = ({onPress}) => {
 
   const handlePress = () => {
 
@@ -12,7 +12,7 @@ const SubmitButton = ({navigation}) => {
   }
 
   return (
-    <TouchableOpacity style={styles.button} onPress={handlePress}>
+    <TouchableOpacity style={styles.button} onPress={onPress}>
       <CustomText style={[styles.textTheme]}>Sign Up</CustomText>
     </TouchableOpacity>
   );
