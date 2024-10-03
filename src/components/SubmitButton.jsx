@@ -1,19 +1,12 @@
 import { TouchableOpacity, StyleSheet } from 'react-native'
 import React from 'react'
-import AntDesignIcons from 'react-native-vector-icons/AntDesign';
-import { useTheme } from './ThemeContext';
 import CustomText from './CustomText';
 
-const SubmitButton = ({onPress}) => {
-
-  const handlePress = () => {
-
-    
-  }
+const SubmitButton = ({children, onPress}) => {
 
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
-      <CustomText style={[styles.textTheme]}>Sign Up</CustomText>
+      <CustomText style={[styles.textTheme]}>{children}</CustomText>
     </TouchableOpacity>
   );
 };
