@@ -3,15 +3,10 @@ import React from 'react'
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import { useTheme } from './ThemeContext';
 
-const WelcomeButton = ({navigation}) => {
-
-  const handlePress = () => {
-
-    
-  }
+const WelcomeButton = ({onPress}) => {
 
   return (
-    <TouchableOpacity style={styles.button} onPress={handlePress}>
+    <TouchableOpacity style={styles.button} onPress={onPress}>
       <AntDesignIcons name="right" size={30}/>
     </TouchableOpacity>
   );
