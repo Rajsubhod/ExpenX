@@ -28,6 +28,8 @@ const RootLayout = () => {
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? '#000' : '#fff',
+    navIconTintColor: isDarkMode ? '#fff' : '#000',
+    headerTextColor: isDarkMode ? 'gray' : '#000',
   };
 
   return (
@@ -40,6 +42,7 @@ const RootLayout = () => {
         initialRouteName="Home"
         screenOptions={({route}) => ({
           tabBarActiveTintColor: 'tomato',
+          tabBarInactiveTintColor: 'gray',
           tabBarStyle: {
             height: 65, 
             paddingBottom: 10,
@@ -53,7 +56,7 @@ const RootLayout = () => {
           headerTitle: ({children}) => (
             <View style={styles.screenHeader}>
               <AppIcon/>
-              <CustomText style={styles.headerTitleText}>{children}</CustomText>
+              <CustomText style={[styles.headerTitleText, {color: backgroundStyle.headerTextColor }]}>{children}</CustomText>
             </View>
           ),
           headerStyle: {
@@ -81,11 +84,7 @@ const RootLayout = () => {
           options={{
             tabBarLabel: 'Setting',
             tabBarIcon: ({color, size}) => (
-              <IonIcons
-                name="settings-outline"
-                color={color}
-                size={size}
-              />
+              <IonIcons name="settings-outline" color={color} size={size} />
             ),
           }}
         />
