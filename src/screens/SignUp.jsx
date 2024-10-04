@@ -10,6 +10,7 @@ import CustomText from '@components/CustomText';
 import {useTheme} from '@context/ThemeContext';
 import CustomInput from '@components/CustomInput';
 import SubmitButton from '@components/SubmitButton';
+import { useAuth } from '@context/AuthContext';
 
 const AppIcon = () => (
   <Image
@@ -26,6 +27,8 @@ const SignUp = ({ navigation }) => {
     password: '',
   });
 
+  const { setAccessTokenToAsyncStorage, setRefreshTokenToAsyncStorage } = useAuth();
+
   const handleInputChange = (name, value) => {
     setFormValues({
       ...formValues,
@@ -33,9 +36,37 @@ const SignUp = ({ navigation }) => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log('Form submitted with values:', formValues);
     // Handle form submission
+    try{
+      const signUpResponse = await fetch('http:////192.168.0.105:8080/auth/v1/signup', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'content-type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify({
+          username: formValues.username,
+          email: formValues.email,
+          password: formValues.password,
+        }),
+      });
+
+      const signUpData = await signUpResponse.json();
+      
+      // console.log('Sign up data:', signUpData);
+      if (signUpData.access_token && signUpData.refresh_token) {
+        setAccessTokenToAsyncStorage(signUpData.access_token);
+        setRefreshTokenToAsyncStorage(signUpData.refresh_token);
+        navigation.navigate('Login');
+      } else {
+        throw new Error('Invalid tokens received');
+      }
+    }catch(error){
+      console.error('Error signing up:', error);
+    }
 
     // Clear form values
     setFormValues({

@@ -26,8 +26,16 @@ const RootLayout = () => {
 
   const {isDarkMode} = useTheme();
 
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? '#000' : '#fff',
+  };
+
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={{
+      colors: {
+        background: backgroundStyle.backgroundColor,
+      },
+    }}>
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={({route}) => ({

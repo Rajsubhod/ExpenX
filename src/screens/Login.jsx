@@ -4,6 +4,7 @@ import CustomText from '@components/CustomText';
 import {useTheme} from '@context/ThemeContext';
 import CustomInput from '@components/CustomInput';
 import SubmitButton from '@components/SubmitButton';
+import { useAuth } from '@context/AuthContext';
 
 const AppIcon = () => (
   <Image
@@ -26,9 +27,38 @@ const Login = ({ navigation }) => {
     });
   };
 
-  const handleSubmit = () => {
+  const { setAccessTokenToAsyncStorage, setRefreshTokenToAsyncStorage, setIsLoggedIn} = useAuth();
+  const handleSubmit = async () => {
     console.log('Form submitted with values:', formValues);
     // Handle form submission
+    try{
+
+      const loginResponse = await fetch('http://192.168.0.105:8080/auth/v1/login', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'content-type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify({
+          username: formValues.username,
+          password: formValues.password,
+        }),
+      });
+
+      const loginData = await loginResponse.json();
+      // console.log('Login data:', loginData);
+      if (loginData.access_token && loginData.refresh_token) {
+        setAccessTokenToAsyncStorage(loginData.access_token);
+        setRefreshTokenToAsyncStorage(loginData.refresh_token);
+        setIsLoggedIn(true);
+      } else {
+        throw new Error('Invalid tokens received');
+      }
+      
+    }catch(error){
+      console.error('Error logging in:', error);
+    }
 
     // Clear form values
     setFormValues({
