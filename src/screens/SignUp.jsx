@@ -3,9 +3,9 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  Keyboard,
+  
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import CustomText from '@components/CustomText';
 import {useTheme} from '@components/ThemeContext';
 import CustomInput from '@components/CustomInput';
@@ -19,8 +19,8 @@ const AppIcon = () => (
   />
 );
 
-const SignUp = () => {
-  const [formValues, setFormValues] = React.useState({
+const SignUp = ({ navigation }) => {
+  const [formValues, setFormValues] = useState({
     username: '',
     email: '',
     password: '',
@@ -82,8 +82,7 @@ const SignUp = () => {
         <CustomText style={{color: 'gray'}}>
           Already have an account?
         </CustomText>
-        {/* TODO: Add navigation to Login screen */}
-        <TouchableOpacity onPress={() => console.log('Navigate to Login')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
           <CustomText style={styles.loginText}>Login</CustomText>
         </TouchableOpacity>
       </View>

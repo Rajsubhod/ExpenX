@@ -13,8 +13,8 @@ const AppIcon = () => (
   />
 );
 
-const Login = () => {
-  const [formValues, setFormValues] = React.useState({
+const Login = ({ navigation }) => {
+  const [formValues, setFormValues] = useState({
     username: '',
     password: '',
   });
@@ -82,7 +82,7 @@ const Login = () => {
       <View style={styles.loginContainer}>
         <CustomText style={{color: 'gray'}}>Don't have account?</CustomText>
         {/* TODO: Add navigation to Login screen */}
-        <TouchableOpacity onPress={() => console.log('Navigate to Login')}>
+        <TouchableOpacity onPress={() => navigation.navigate('SignUp') }>
           <CustomText style={styles.loginText}>Sign Up</CustomText>
         </TouchableOpacity>
       </View>

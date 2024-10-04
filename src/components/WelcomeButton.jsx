@@ -7,7 +7,7 @@ const WelcomeButton = ({onPress}) => {
 
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
-      <AntDesignIcons name="right" size={30}/>
+      <AntDesignIcons name="right" size={30} color={'#000'}/>
     </TouchableOpacity>
   );
 };

@@ -13,16 +13,6 @@ const AppIcon = () => (
   />
 );
 
-const FinconeLogo = () => (
-  <Svg width="200" height="200" viewBox="0 0 200 200">
-    <Path
-      
-      stroke="tomato"
-      fill="none"
-    />
-    {/* Add more Path elements to complete your SVG */}
-  </Svg>
-);
 
 const Welcome = () => {
   const {isDarkMode} = useTheme();
@@ -33,7 +23,9 @@ const Welcome = () => {
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme}}>
       <AppIcon />
       <CustomText style={styles.text}> Welcome! To</CustomText>
-      <CustomText style={{fontSize: 25, color: 'tomato', paddingBottom: 200, fontfamily: ''}}>FINCONE</CustomText>
+      <CustomText style={{fontSize: 25, color: 'tomato', paddingBottom: 200, fontfamily: ''}}>
+        finco
+      </CustomText>
       <WelcomeButton onPress={() => navigation.navigate('Login')}/>
     </View>
   );
