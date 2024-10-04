@@ -1,7 +1,7 @@
 import {Image, StyleSheet, View} from 'react-native';
 import React from 'react';
 import CustomText from '@components/CustomText';
-import {useTheme} from '@components/ThemeContext';
+import {useTheme} from '@context/ThemeContext';
 import WelcomeButton from '@components/WelcomeButton';
 import { useNavigation } from '@react-navigation/native';
 

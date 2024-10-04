@@ -7,7 +7,7 @@ import IonIcons from 'react-native-vector-icons/Ionicons';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 
 import Home from '@screens/Home';
-import { useTheme } from '@components/ThemeContext';
+import { useTheme } from '@context/ThemeContext';
 import CustomText from '@components/CustomText';
 import Setting from '@screens/Setting';
 

@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import CustomText from '@components/CustomText';
-import {useTheme} from '@components/ThemeContext';
+import {useTheme} from '@context/ThemeContext';
 import CustomInput from '@components/CustomInput';
 import SubmitButton from '@components/SubmitButton';
 

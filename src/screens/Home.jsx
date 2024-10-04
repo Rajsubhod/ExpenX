@@ -1,6 +1,6 @@
 import {View, StyleSheet} from 'react-native';
 import React from 'react';
-import { useTheme } from '@components/ThemeContext';
+import { useTheme } from '@context/ThemeContext';
 import CustomText from '@components/CustomText';
 
 const Home = () => {

@@ -1,7 +1,6 @@
 import {useState} from 'react';
 import {View, TextInput, TouchableOpacity, StyleSheet} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useTheme } from './ThemeContext';
 
 const CustomInput = ({placeholder, isSecure = false, name, value, onChange}) => {
   const [isFocused, setIsFocused] = useState(false);

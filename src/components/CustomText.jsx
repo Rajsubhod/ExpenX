@@ -1,6 +1,6 @@
 import { Text, StyleSheet } from 'react-native';
 import React from 'react';
-import { useTheme } from '@components/ThemeContext'; // Import the useTheme hook
+import { useTheme } from '@context/ThemeContext'; // Import the useTheme hook
 
 const CustomText = ({ children, style, ...props }) => {
     const {isDarkMode} = useTheme();

@@ -1,5 +1,5 @@
 import RootLayout from "@app/RootLayout";
-import { ThemeProvider, useTheme } from "@components/ThemeContext";
+import { ThemeProvider, useTheme } from "context/ThemeContext";
 import { SafeAreaView, StatusBar, StyleSheet } from "react-native";
 import AuthLayout from "@app/AuthLayout";
 

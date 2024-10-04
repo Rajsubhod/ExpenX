@@ -1,7 +1,6 @@
 import { TouchableOpacity, StyleSheet } from 'react-native'
 import React from 'react'
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
-import { useTheme } from './ThemeContext';
 
 const WelcomeButton = ({onPress}) => {
 
