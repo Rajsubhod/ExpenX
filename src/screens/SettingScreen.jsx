@@ -12,28 +12,28 @@ const SettingScreen = ({navigation}) => {
   const {handleLogout} = useAuth();
   const {isDarkMode} = useTheme();
   const theme = isDarkMode ? '#000' : '#fff';
-  const iconColor = isDarkMode ? 'tomato' : 'gray';
+  const iconColor =  'tomato';
   return (
     <View style={[styles.container, {backgroundColor: theme}]}>
       {/* TODO: DD placeholder for profileImage */}
 
       <View style={styles.form}>
         <View style={styles.innerForm}>
-          <MaterialCommunityIcons name="face-man-profile" size={40} color={iconColor} style={[styles.icon, {marginRight:10}]}/>
+          <MaterialCommunityIcons name="face-man-profile" size={25} color={iconColor} style={[styles.icon, {marginRight:10}]}/>
           <CustomSelector onPress={() => navigation.navigate('Profile')}>
             Profile Settings
           </CustomSelector>
         </View>
 
         <View style={styles.innerForm}>
-          <AntDesignIcons name="infocirlceo" size={30} color={iconColor} style={[styles.icon, {marginRight: 20}]} />
+          <AntDesignIcons name="infocirlceo" size={20} color={iconColor} style={[styles.icon, {marginRight: 20}]} /> 
           <CustomSelector onPress={() => navigation.navigate('About')}>
             About Us 
           </CustomSelector>
         </View>
 
         <View style={styles.innerForm}>
-          <AntDesignIcons name="logout" size={30} color={iconColor} style={[styles.icon, {marginRight: 20}]} />
+          <AntDesignIcons name="logout" size={20} color={iconColor} style={[styles.icon, {marginRight: 20}]} />
           <CustomSelector onPress={handleLogout}>
             Log Out 
           </CustomSelector>
@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     marginTop: 80,
     width: '80%',
     alignItems: 'flex-end',
+    paddingLeft: 20
   },
   innerForm: {
     flexDirection: 'row',

@@ -6,6 +6,7 @@ import CustomText from '@components/CustomText';
 const Home = () => {
   const {isDarkMode} = useTheme();
   const viewColor = isDarkMode ? '#000' : '#fff';
+  // TODO: Implement the Home screen
   return (
     <View style={[styles.home, {backgroundColor : viewColor}]}>
       <CustomText >Home Screen</CustomText>
