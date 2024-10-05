@@ -3,7 +3,7 @@ import React from 'react'
 import CustomText from './CustomText';
 import { useTheme } from '@context/ThemeContext';
 
-const SubmitButton = ({children, onPress}) => {
+const CustomSelector = ({children, onPress}) => {
     const {isDarkMode} = useTheme();
     const theme = isDarkMode ? '#000' : '#fff';
     const borderBottomColor = isDarkMode ? 'tomato' : '#ccc';
@@ -16,7 +16,7 @@ const SubmitButton = ({children, onPress}) => {
   );
 };
 
-export default SubmitButton;
+export default CustomSelector;
 
 const styles = StyleSheet.create({
   button: {

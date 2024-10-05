@@ -5,8 +5,11 @@ import CustomText from '@components/CustomText';
 import SubmitButton from '@components/CustomSelector';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
+import CustomSelector from '@components/CustomSelector';
+import { useAuth } from '@context/AuthContext';
 
 const SettingScreen = ({navigation}) => {
+  const {handleLogout} = useAuth();
   const {isDarkMode} = useTheme();
   const theme = isDarkMode ? '#000' : '#fff';
   const iconColor = isDarkMode ? 'tomato' : 'gray';
@@ -17,16 +20,23 @@ const SettingScreen = ({navigation}) => {
       <View style={styles.form}>
         <View style={styles.innerForm}>
           <MaterialCommunityIcons name="face-man-profile" size={40} color={iconColor} style={[styles.icon, {marginRight:10}]}/>
-          <SubmitButton onPress={() => navigation.navigate('Profile')}>
+          <CustomSelector onPress={() => navigation.navigate('Profile')}>
             Profile Settings
-          </SubmitButton>
+          </CustomSelector>
         </View>
 
         <View style={styles.innerForm}>
           <AntDesignIcons name="infocirlceo" size={30} color={iconColor} style={[styles.icon, {marginRight: 20}]} />
-          <SubmitButton onPress={() => navigation.navigate('About')}>
+          <CustomSelector onPress={() => navigation.navigate('About')}>
             About Us 
-          </SubmitButton>
+          </CustomSelector>
+        </View>
+
+        <View style={styles.innerForm}>
+          <AntDesignIcons name="logout" size={30} color={iconColor} style={[styles.icon, {marginRight: 20}]} />
+          <CustomSelector onPress={handleLogout}>
+            Log Out 
+          </CustomSelector>
         </View>
       </View>
     </View>
@@ -45,13 +55,6 @@ const styles = StyleSheet.create({
     marginTop: 80,
     width: '80%',
     alignItems: 'flex-end',
-  },
-  seperator: {
-    height: 1,
-    width: '80%',
-    backgroundColor: 'gray',
-    marginVertical: 0,
-    marginTop: 100,
   },
   innerForm: {
     flexDirection: 'row',
