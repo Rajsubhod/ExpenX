@@ -9,7 +9,8 @@ export const AuthProvider = ({children}) => {
   
   const [accessToken, setAccessToken] = useState(storage.getString('accessToken') || '');
   const [refreshToken, setRefreshToken] = useState(storage.getString('refreshToken') || '')
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [userId, setUserId] = useState(storage.getString('userId') || '');
 
   const setAccessTokenToAsyncStorage = (accessToken) => {
     storage.set('accessToken', accessToken);
@@ -19,6 +20,11 @@ export const AuthProvider = ({children}) => {
   const setRefreshTokenToAsyncStorage = (refreshToken) => {
     storage.set('refreshToken', refreshToken);
     setRefreshToken(refreshToken);
+  };
+
+  const setUserIdToAsyncStorage = (userId) => {
+    storage.set('userId', userId);
+    setUserId(userId);
   };
 
   const isUserLoggedIn = async () => {
@@ -37,9 +43,13 @@ export const AuthProvider = ({children}) => {
         // throw new Error('Network response was not ok');
       }
 
-      return response.ok;
+      if(response.ok){
+        const data = await response.json();
+        setUserIdToAsyncStorage(data.userId);
+        return true;
+      }
     } catch (error) {
-      console.error('Error checking user login status:', error);
+      console.log('Error checking user login status:', error);
       return null;
     }
   };
@@ -70,10 +80,20 @@ export const AuthProvider = ({children}) => {
       return response.ok;
     }
     catch(error){
-      console.error('Error refreshing token:', error);
+      console.log('Error refreshing token:', error);
       return null;
     }
   };
+
+  const handleLogout = () => {
+    try{
+      storage.clearAll();
+      setIsLoggedIn(false);
+    }
+    catch(error){
+      console.log('Error logging out:', error);
+    }
+  }
 
   useEffect(() => {
     const handleLogin = async () => {
@@ -88,7 +108,7 @@ export const AuthProvider = ({children}) => {
           setIsLoggedIn(true);
         }
         else{
-          console.error('Login Creditionals expired! Please login again');
+          console.log('Login Creditionals expired! Please login again');
         }
       }
     };
@@ -104,6 +124,9 @@ export const AuthProvider = ({children}) => {
         setAccessTokenToAsyncStorage,
         refreshToken,
         setRefreshTokenToAsyncStorage,
+        userId,
+        setUserIdToAsyncStorage,
+        handleLogout,
       }}>
       {children}
     </AuthContext.Provider>

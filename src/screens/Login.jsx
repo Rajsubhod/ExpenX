@@ -111,7 +111,6 @@ const Login = ({ navigation }) => {
       </View>
       <View style={styles.loginContainer}>
         <CustomText style={{color: 'gray'}}>Don't have account?</CustomText>
-        {/* TODO: Add navigation to Login screen */}
         <TouchableOpacity onPress={() => navigation.navigate('SignUp') }>
           <CustomText style={styles.loginText}>Sign Up</CustomText>
         </TouchableOpacity>
