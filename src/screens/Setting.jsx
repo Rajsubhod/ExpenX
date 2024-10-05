@@ -12,16 +12,16 @@ const Setting = () => {
   const viewColor = isDarkMode ? '#000' : '#fff';
   return (
     <stack.Navigator
-        initialRouteName="Welcome"
-        screenOptions={{
-          headerShown: false,
-          animation: 'slide_from_right',
-          animationTypeForReplace: 'push',
-        }}>
-        <stack.Screen name="SettingScreen" component={SettingScreen} />
-        <stack.Screen name="Profile" component={Profile} />
-        <stack.Screen name="About" component={About} />
-      </stack.Navigator>
+      initialRouteName="SettingScreen"
+      screenOptions={({route}) => ({
+        headerShown: route.name !== 'SettingScreen',
+        animation: 'slide_from_right',
+        animationTypeForReplace: 'push',
+      })}>
+      <stack.Screen name="SettingScreen" component={SettingScreen} />
+      <stack.Screen name="Profile" component={Profile} />
+      <stack.Screen name="About" component={About} />
+    </stack.Navigator>
   );
 };
 

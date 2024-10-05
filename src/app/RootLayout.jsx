@@ -1,5 +1,5 @@
 import {View, Image, StyleSheet} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -7,7 +7,7 @@ import IonIcons from 'react-native-vector-icons/Ionicons';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 
 import Home from '@screens/Home';
-import { useTheme } from '@context/ThemeContext';
+import {useTheme} from '@context/ThemeContext';
 import CustomText from '@components/CustomText';
 import Setting from '@screens/Setting';
 
@@ -23,7 +23,6 @@ const AppIcon = () => (
 );
 
 const RootLayout = () => {
-
   const {isDarkMode} = useTheme();
 
   const backgroundStyle = {
@@ -33,41 +32,62 @@ const RootLayout = () => {
   };
 
   return (
-    <NavigationContainer theme={{
-      colors: {
-        background: backgroundStyle.backgroundColor,
-      },
-    }}>
+    <NavigationContainer
+      theme={{
+        colors: {
+          background: backgroundStyle.backgroundColor,
+        },
+      }}>
       <Tab.Navigator
         initialRouteName="Home"
-        screenOptions={({route}) => ({
-          tabBarActiveTintColor: 'tomato',
-          tabBarInactiveTintColor: 'gray',
-          tabBarStyle: {
-            height: 65, 
-            paddingBottom: 10,
-            // backgroundColor: 'orange',
-            elevation: 10,
-            shadowOpacity: 0,
-            borderTopWidth: 0,
-            backgroundColor: isDarkMode ? '#000' : '#fff',
-          },
+        screenOptions={({ navigation }) => {
           
-          headerTitle: ({children}) => (
-            <View style={styles.screenHeader}>
-              <AppIcon/>
-              <CustomText style={[styles.headerTitleText, {color: backgroundStyle.headerTextColor }]}>{children}</CustomText>
-            </View>
-          ),
-          headerStyle: {
-            // backgroundColor: '#f4511e',
-            height: 70,
-            elevation: 0,
-            shadowOpacity: 0,
-            backgroundColor: isDarkMode ? '#000' : '#fff',
-          },
-        })}
-        >
+          const state = navigation.getState();
+          const activeRoute = state.routes[state.index];
+          let headerShown = true;
+          console.log('activeRoute', activeRoute.name);
+          if (activeRoute.name === 'Setting') {
+            const settingState = activeRoute.state;
+            console.log('settingState', settingState);
+            if (settingState) {
+              const activeSettingScreen = settingState.routes[settingState.index]?.name;
+              headerShown = activeSettingScreen === 'SettingScreen'; // Hide for Profile and About
+            }
+          }
+
+          return {
+            headerShown: headerShown,
+            tabBarActiveTintColor: 'tomato',
+            tabBarInactiveTintColor: 'gray',
+            tabBarStyle: {
+              height: 65,
+              paddingBottom: 10,
+              elevation: 10,
+              shadowOpacity: 0,
+              borderTopWidth: 0,
+              backgroundColor: isDarkMode ? '#000' : '#fff',
+            },
+
+            headerTitle: ({children}) => (
+              <View style={styles.screenHeader}>
+                <AppIcon />
+                <CustomText
+                  style={[
+                    styles.headerTitleText,
+                    {color: backgroundStyle.headerTextColor},
+                  ]}>
+                  {children}
+                </CustomText>
+              </View>
+            ),
+            headerStyle: {
+              height: 70,
+              elevation: 0,
+              shadowOpacity: 0,
+              backgroundColor: isDarkMode ? '#000' : '#fff',
+            },
+          };
+        }}>
         <Tab.Screen
           name="Home"
           component={Home}
