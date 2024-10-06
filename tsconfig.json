@@ -8,6 +8,7 @@
       "@screens/*": ["screens/*"],
       "@assets/*": ["assets/*"],
       "@context/*": ["context/*"],
+      "@utils/*": ["utils/*"],
     },
   }
 }
