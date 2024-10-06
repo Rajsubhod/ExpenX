@@ -1,7 +1,15 @@
-import {View, StyleSheet, FlatList} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  PermissionsAndroid,
+  Platform,
+} from 'react-native';
 import React, {useEffect} from 'react';
 import {useTheme} from '@context/ThemeContext';
 import CustomText from '@components/CustomText';
+import SmsAndroid from 'react-native-get-sms-android';
+import SmsReceiver from 'react-native-android-sms-listener';
 
 const Home = () => {
   const {isDarkMode} = useTheme();
@@ -10,7 +18,7 @@ const Home = () => {
   const cardBg = isDarkMode ? '#444' : '#fff';
   const borderBottomColor = isDarkMode ? '#333' : '#ccc';
   const transactionText = isDarkMode ? '#888' : '#333';
-  
+
   const [transactions, setTransactions] = React.useState([
     {
       id: '1',
@@ -89,11 +97,127 @@ const Home = () => {
     // Update transactions state
 
     // sort transactions by date
-    setTransactions((prevTransactions) => prevTransactions.sort((a, b) => new Date(b.date) - new Date(a.date)));
+    setTransactions(prevTransactions =>
+      prevTransactions.sort((a, b) => new Date(b.date) - new Date(a.date)),
+    );
+  }, []);
+
+  useEffect(() => {
+    // Request SMS permission -- WORKED
+    const requestSmsPermission = async () => {
+      try {
+        if (Platform.OS === 'android') {
+          const grantedRead = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_SMS,
+            {
+              title: 'SMS Permission',
+              message:
+                'This app needs access to your SMS messages to function properly.',
+              buttonNeutral: 'Ask Me Later',
+              buttonNegative: 'Cancel',
+              buttonPositive: 'OK',
+            },
+          );
+          if (grantedRead === PermissionsAndroid.RESULTS.GRANTED) {
+            fetchSmsMessages();
+          } else {
+            console.log('SMS permission denied');
+          }
+
+          const grantedListen = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.RECEIVE_SMS,
+            {
+              title: 'SMS Permission',
+              message:
+                'This app needs access to your SMS messages to function properly.',
+              buttonNeutral: 'Ask Me Later',
+              buttonNegative: 'Cancel',
+              buttonPositive: 'OK',
+            },
+          );
+          if (grantedListen === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('SMS listen permission granted');
+            listenForIncomingSms();
+          } else {
+            console.log('SMS listen permission denied');
+          }
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    };
+
+    // Listen for incoming sms messages -- WORKED ( WIth Limitation Will only work when app is Active)
+    // Solution: Create Native Service in Android Broadcast Receiver to listen for incoming SMS
+    const listenForIncomingSms = () => {
+      try {
+        const subscription = SmsReceiver.addListener(message => {
+          console.log('Incoming SMS:', message);
+          sendSmsToBackend(message.body);
+        });
+        // Cleanup listener on unmount
+        return () => {
+          subscription.remove();
+        };
+      } catch (error) {
+        console.log('Error listening for incoming SMS:', error);
+      }
+    };
+
+    // Fetch sms messages -- WORKED
+    const fetchSmsMessages = () => {
+      SmsAndroid.list(
+        JSON.stringify({
+          box: 'inbox',
+          maxCount: 1,
+        }),
+        fail => {
+          console.log('Failed with this error: ' + fail);
+        },
+        (count, smsList) => {
+          const messages = JSON.parse(smsList);
+          console.log(count, '\n\n\n\n', messages);
+          sendSmsToBackend(messages[0].body);
+        },
+      );
+    };
+
+    // send sms to backend -- WORKED
+    const sendSmsToBackend = async message => {
+      try {
+        const response = await fetch(
+          'http://192.168.0.105:8000/api/v1/message',
+          {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'content-type': 'application/json',
+              // Authorization: `Bearer ${accessToken}`,
+              'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({message}), // Send the SMS messages as JSON
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        console.log('SMS successfully sent to backend:', responseData);
+      } catch (error) {
+        console.log('Error sending SMS to backend:', error);
+      }
+    };
+
+    requestSmsPermission();
+
+    // Cleanup listener on unmount};
   }, []);
 
   const TrasactionList = ({item}) => (
-    <View style={[styles.transactionItem, {borderBottomColor: borderBottomColor} ]}>
+    <View
+      style={[styles.transactionItem, {borderBottomColor: borderBottomColor}]}>
       <CustomText style={[styles.transactionText, {color: transactionText}]}>
         {item.sender} → {item.receiver}
       </CustomText>
@@ -106,14 +230,23 @@ const Home = () => {
   return (
     <View style={[styles.home, {backgroundColor: viewColor}]}>
       <View style={styles.container}>
-        <View style={[styles.cardContainer, {backgroundColor:cardContainerBg}]}>
-          <View style={[styles.card, {backgroundColor:cardBg}]}>
-            <CustomText style={[styles.cardTitle, {color:'gray'}]}>Total Spending</CustomText>
-            <CustomText style={[styles.cardAmount, {color:'tomato'}]}>₹1200</CustomText>
+        <View
+          style={[styles.cardContainer, {backgroundColor: cardContainerBg}]}>
+          <View style={[styles.card, {backgroundColor: cardBg}]}>
+            <CustomText style={[styles.cardTitle, {color: 'gray'}]}>
+              Total Spending
+            </CustomText>
+            <CustomText style={[styles.cardAmount, {color: 'tomato'}]}>
+              ₹1200
+            </CustomText>
           </View>
           <View style={[styles.card, {backgroundColor: cardBg}]}>
-            <CustomText style={[styles.cardTitle, {color:'gray'}]}>Monthly Spending</CustomText>
-            <CustomText style={[styles.cardAmount, {color:'tomato'}]}>₹300</CustomText>
+            <CustomText style={[styles.cardTitle, {color: 'gray'}]}>
+              Monthly Spending
+            </CustomText>
+            <CustomText style={[styles.cardAmount, {color: 'tomato'}]}>
+              ₹300
+            </CustomText>
           </View>
         </View>
 
@@ -125,7 +258,9 @@ const Home = () => {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.emptyComponent}>
-              <CustomText style={[{color:'gray'}]}>No transactions found</CustomText>
+              <CustomText style={[{color: 'gray'}]}>
+                No transactions found
+              </CustomText>
             </View>
           }
         />
