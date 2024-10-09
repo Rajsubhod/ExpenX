@@ -10,6 +10,8 @@ import {useTheme} from '@context/ThemeContext';
 import CustomText from '@components/CustomText';
 import SmsAndroid from 'react-native-get-sms-android';
 import SmsReceiver from 'react-native-android-sms-listener';
+import {constants} from 'Constants';
+import {useAuth} from '@context/AuthContext';
 
 const Home = () => {
   const {isDarkMode} = useTheme();
@@ -19,91 +21,58 @@ const Home = () => {
   const borderBottomColor = isDarkMode ? '#333' : '#ccc';
   const transactionText = isDarkMode ? '#888' : '#333';
 
+  const {accessToken} = useAuth();
   const [transactions, setTransactions] = React.useState([
     {
       id: '1',
       sender: 'John Doe',
       receiver: 'Jane Doe',
       amount: 100,
-      date: '2021-09-01',
-    },
-    {
-      id: '2',
-      sender: 'Jane Doe',
-      receiver: 'John Doe',
-      amount: 50,
-      date: '2021-09-02',
-    },
-    {
-      id: '3',
-      sender: 'Jane Doe',
-      receiver: 'John Doe',
-      amount: 150,
-      date: '2021-09-03',
-    },
-    {
-      id: '4',
-      sender: 'John Doe',
-      receiver: 'Jane Doe',
-      amount: 200,
-      date: '2021-09-04',
-    },
-    {
-      id: '5',
-      sender: 'John Doe',
-      receiver: 'Jane Doe',
-      amount: 300,
-      date: '2021-09-05',
-    },
-    {
-      id: '6',
-      sender: 'Jane Doe',
-      receiver: 'John Doe',
-      amount: 250,
-      date: '2021-09-06',
-    },
-    {
-      id: '7',
-      sender: 'John Doe',
-      receiver: 'Jane Doe',
-      amount: 100,
-      date: '2021-09-07',
-    },
-    {
-      id: '8',
-      sender: 'Jane Doe',
-      receiver: 'John Doe',
-      amount: 50,
-      date: '2021-09-08',
-    },
-    {
-      id: '9',
-      sender: 'Jane Doe',
-      receiver: 'John Doe',
-      amount: 150,
-      date: '2021-09-09',
-    },
-    {
-      id: '10',
-      sender: 'John Doe',
-      receiver: 'Jane Doe',
-      amount: 200,
       date: '2021-09-10',
     },
   ]);
 
+  const fetchuserTransactions = async () => {
+    try {
+      const data = await fetch(constants.FETCH_USER_TRANSACTIONS, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'content-type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      });
+
+      if (!data.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      if (data.ok) {
+        return data.json();
+      }
+    } catch (error) {}
+  };
+
   useEffect(() => {
     // Fetch transactions
+    const handleFetchTransaction = async () => {
+      const respose = await fetchuserTransactions();
+      if (respose) {
+        setTransactions(respose);
+      }
+    };
     // Update transactions state
-
     // sort transactions by date
     setTransactions(prevTransactions =>
       prevTransactions.sort((a, b) => new Date(b.date) - new Date(a.date)),
     );
+
+    handleFetchTransaction();
   }, []);
 
   useEffect(() => {
-    // Request SMS permission -- WORKED
+    // Request SMS permission
     const requestSmsPermission = async () => {
       try {
         if (Platform.OS === 'android') {
@@ -185,19 +154,16 @@ const Home = () => {
     // send sms to backend -- WORKED
     const sendSmsToBackend = async message => {
       try {
-        const response = await fetch(
-          'http://192.168.0.105:8000/api/v1/message',
-          {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'content-type': 'application/json',
-              // Authorization: `Bearer ${accessToken}`,
-              'X-Requested-With': 'XMLHttpRequest',
-            },
-            body: JSON.stringify({message}), // Send the SMS messages as JSON
+        const response = await fetch(constants.ADD_TRANSACTION, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+            'X-Requested-With': 'XMLHttpRequest',
           },
-        );
+          body: JSON.stringify({message}), // Send the SMS messages as JSON
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
