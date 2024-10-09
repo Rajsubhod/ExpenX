@@ -1,5 +1,6 @@
 import {createContext, useEffect, useState, useContext} from 'react';
 import {MMKV} from 'react-native-mmkv';
+import { constants } from 'Constants';
 
 const AuthContext = createContext();
 
@@ -29,7 +30,7 @@ export const AuthProvider = ({children}) => {
 
   const isUserLoggedIn = async () => {
     try {
-      const response = await fetch('http://192.168.0.105:8080/auth/v1/ping', {
+      const response = await fetch(constants.PING, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -56,7 +57,7 @@ export const AuthProvider = ({children}) => {
 
   const handleRefreshToken = async () => {
     try{
-      const response = await fetch('http://192.168.0.105:8080/auth/v1/refreshtoken',{
+      const response = await fetch(constants.REFRESH_TOKEN,{
         method: 'POST',
         headers: {
           Accept: 'application/json',

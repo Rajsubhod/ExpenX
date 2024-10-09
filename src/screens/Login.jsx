@@ -5,6 +5,7 @@ import {useTheme} from '@context/ThemeContext';
 import CustomInput from '@components/CustomInput';
 import SubmitButton from '@components/SubmitButton';
 import { useAuth } from '@context/AuthContext';
+import { constants } from 'Constants';
 
 const AppIcon = () => (
   <Image
@@ -33,7 +34,7 @@ const Login = ({ navigation }) => {
     // Handle form submission
     try{
 
-      const loginResponse = await fetch('http://192.168.0.105:8080/auth/v1/login', {
+      const loginResponse = await fetch(constants.LOGIN, {
         method: 'POST',
         headers: {
           Accept: 'application/json',

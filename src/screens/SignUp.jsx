@@ -11,6 +11,7 @@ import {useTheme} from '@context/ThemeContext';
 import CustomInput from '@components/CustomInput';
 import SubmitButton from '@components/SubmitButton';
 import { useAuth } from '@context/AuthContext';
+import { constants } from 'Constants';
 
 const AppIcon = () => (
   <Image
@@ -40,7 +41,7 @@ const SignUp = ({ navigation }) => {
     console.log('Form submitted with values:', formValues);
     // Handle form submission
     try{
-      const signUpResponse = await fetch('http:////192.168.0.105:8080/auth/v1/signup', {
+      const signUpResponse = await fetch(constants.SIGNUP, {
         method: 'POST',
         headers: {
           Accept: 'application/json',

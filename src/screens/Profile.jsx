@@ -7,6 +7,7 @@ import CustomSelector from '@components/CustomSelector';
 import CustomButtom from '@components/CustomButtom';
 import {useFocusEffect} from '@react-navigation/native';
 import CustomView from '@components/CustomView';
+import {constants} from 'Constants';
 
 const Profile = ({navigation}) => {
   const {userId, accessToken} = useAuth();
@@ -42,18 +43,15 @@ const Profile = ({navigation}) => {
 
   // Handler to update user data
   const getUserData = async () => {
-    const data = await fetch(
-      `http://192.168.0.105:8090/user/api/v1/${userId}`,
-      {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'content-type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-          'X-Requested-With': 'XMLHttpRequest',
-        },
+    const data = await fetch(constants.FETCH_USER_DETAILS, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'content-type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+        'X-Requested-With': 'XMLHttpRequest',
       },
-    );
+    });
 
     const userData = await data.json();
     console.log('User data:', userData);
@@ -70,27 +68,24 @@ const Profile = ({navigation}) => {
     console.log('Confirmed changes:', formValues);
     // Call API to update user data
     try {
-      const response = await fetch(
-        `http://192.168.0.105:8090/user/api/v1/${userId}`,
-        {
-          method: 'PUT',
-          headers: {
-            Accept: 'application/json',
-            'content-type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-            'X-Requested-With': 'XMLHttpRequest',
-          },
-          body: JSON.stringify({
-            first_name: formValues.first_name,
-            last_name: formValues.last_name,
-            email: formValues.email,
-            phone_number: formValues.phone_number,
-          }),
+      const response = await fetch(constants.UPDATE_USER_DETAILS, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'content-type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+          'X-Requested-With': 'XMLHttpRequest',
         },
-      );
+        body: JSON.stringify({
+          first_name: formValues.first_name,
+          last_name: formValues.last_name,
+          email: formValues.email,
+          phone_number: formValues.phone_number,
+        }),
+      });
       if (response.ok) {
         console.log('User data updated successfully');
-      }else{
+      } else {
         throw new Error('Network response was not ok');
       }
     } catch (error) {
