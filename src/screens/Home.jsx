@@ -1,15 +1,9 @@
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  PermissionsAndroid,
-  Platform,
-} from 'react-native';
-import React, {useEffect} from 'react';
+import {View, StyleSheet, FlatList} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {useTheme} from '@context/ThemeContext';
 import CustomText from '@components/CustomText';
-import SmsAndroid from 'react-native-get-sms-android';
 import SmsReceiver from 'react-native-android-sms-listener';
+import SmsAndroid from 'react-native-get-sms-android';
 import {constants} from 'Constants';
 import {useAuth} from '@context/AuthContext';
 
@@ -21,16 +15,13 @@ const Home = () => {
   const borderBottomColor = isDarkMode ? '#333' : '#ccc';
   const transactionText = isDarkMode ? '#888' : '#333';
 
-  const {accessToken} = useAuth();
-  const [transactions, setTransactions] = React.useState([
-    {
-      id: '1',
-      sender: 'John Doe',
-      receiver: 'Jane Doe',
-      amount: 100,
-      date: '2021-09-10',
-    },
-  ]);
+  const {accessToken, userId} = useAuth();
+  const [transactions, setTransactions] = React.useState([]);
+  const [monthlySpending, setMonthlySpending] = React.useState(0);
+  const [totalSpending, setTotalSpending] = React.useState(0);
+  const [isConnected, setIsConnected] = useState(false);
+  const connectTimeoutRef = useRef(null);
+  const [messages, setMessages] = useState([]);
 
   const fetchuserTransactions = async () => {
     try {
@@ -41,6 +32,7 @@ const Home = () => {
           'content-type': 'application/json',
           Authorization: `Bearer ${accessToken}`,
           'X-Requested-With': 'XMLHttpRequest',
+          'X-User-Id': '88cbc110-43fc-40d5-8aab-63b7b7bebad6', // Hardcoded for now
         },
       });
 
@@ -51,18 +43,86 @@ const Home = () => {
       if (data.ok) {
         return data.json();
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log('Error fetching user transactions:', error);
+      return null;
+    }
   };
+
+  const fetchSSE = useCallback(async () => {
+    if (!userId) return;
+
+    try {
+      const response = await fetch(constants.SSE_URL, {
+        headers: {
+          Accept: 'text/event-stream',
+          'content-type': 'text/event-stream',
+          Authorization: `Bearer ${accessToken}`,
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-User-Id': '88cbc110-43fc-40d5-8aab-63b7b7bebad6', // Hardcoded for now
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      setIsConnected(true);
+      console.log(response);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const {value, done} = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n').filter(line => line.trim() !== '');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const eventData = line.slice(6);
+            try {
+              console.log('Event message:', eventData);
+              const newMessage = JSON.parse(eventData);
+              console.log('New Message:', newMessage);
+              setMessages(prevMessages => [...prevMessages, newMessage]);
+            } catch (error) {
+              console.error('Error parsing SSE data:', error);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('SSE error:', error);
+      setIsConnected(false);
+    } finally {
+      // Schedule reconnection
+      connectTimeoutRef.current = setTimeout(fetchSSE, RECONNECT_TIMEOUT);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (userId) {
+      fetchSSE();
+    }
+
+    return () => {
+      if (connectTimeoutRef.current) {
+        clearTimeout(connectTimeoutRef.current);
+      }
+    };
+  }, [userId, fetchSSE]);
 
   useEffect(() => {
     // Fetch transactions
     const handleFetchTransaction = async () => {
       const respose = await fetchuserTransactions();
+      console.log('Transactions:', respose);
       if (respose) {
         setTransactions(respose);
       }
     };
-    // Update transactions state
     // sort transactions by date
     setTransactions(prevTransactions =>
       prevTransactions.sort((a, b) => new Date(b.date) - new Date(a.date)),
@@ -72,50 +132,31 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    // Request SMS permission
-    const requestSmsPermission = async () => {
-      try {
-        if (Platform.OS === 'android') {
-          const grantedRead = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.READ_SMS,
-            {
-              title: 'SMS Permission',
-              message:
-                'This app needs access to your SMS messages to function properly.',
-              buttonNeutral: 'Ask Me Later',
-              buttonNegative: 'Cancel',
-              buttonPositive: 'OK',
-            },
-          );
-          if (grantedRead === PermissionsAndroid.RESULTS.GRANTED) {
-            fetchSmsMessages();
-          } else {
-            console.log('SMS permission denied');
-          }
+    // Update transactions state and calculate spending
+    const calculateSpending = () => {
+      let monthlyTotal = 0;
+      let totalSpent = 0;
+      const currentMonth = new Date().getMonth();
 
-          const grantedListen = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.RECEIVE_SMS,
-            {
-              title: 'SMS Permission',
-              message:
-                'This app needs access to your SMS messages to function properly.',
-              buttonNeutral: 'Ask Me Later',
-              buttonNegative: 'Cancel',
-              buttonPositive: 'OK',
-            },
-          );
-          if (grantedListen === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('SMS listen permission granted');
-            listenForIncomingSms();
-          } else {
-            console.log('SMS listen permission denied');
-          }
+      transactions.forEach(transaction => {
+        const transactionDate = new Date(transaction.date);
+        // console.log('Transaction:', transactionDate.getMonth());
+        // console.log('Current Month:', currentMonth);
+        // console.log('Current Year:', currentYear);
+        if (transactionDate.getMonth() === currentMonth) {
+          monthlyTotal += transaction.amount;
         }
-      } catch (err) {
-        console.warn(err);
-      }
+        totalSpent += transaction.amount;
+      });
+
+      setMonthlySpending(monthlyTotal);
+      setTotalSpending(totalSpent);
     };
 
+    calculateSpending();
+  }, [transactions]);
+
+  useEffect(() => {
     // Listen for incoming sms messages -- WORKED ( WIth Limitation Will only work when app is Active)
     // Solution: Create Native Service in Android Broadcast Receiver to listen for incoming SMS
     const listenForIncomingSms = () => {
@@ -132,7 +173,34 @@ const Home = () => {
         console.log('Error listening for incoming SMS:', error);
       }
     };
+    // send sms to backend -- WORKED
+    const sendSmsToBackend = async message => {
+      try {
+        const response = await fetch(constants.ADD_TRANSACTION, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: JSON.stringify({message}), // Send the SMS messages as JSON
+        });
 
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        console.log('SMS successfully sent to backend:', responseData);
+      } catch (error) {
+        console.log('Error sending SMS to backend:', error);
+      }
+    };
+    listenForIncomingSms();
+  }, []);
+
+  useEffect(() => {
     // Fetch sms messages -- WORKED
     const fetchSmsMessages = () => {
       SmsAndroid.list(
@@ -176,8 +244,7 @@ const Home = () => {
       }
     };
 
-    requestSmsPermission();
-
+    fetchSmsMessages();
     // Cleanup listener on unmount};
   }, []);
 
@@ -203,7 +270,7 @@ const Home = () => {
               Total Spending
             </CustomText>
             <CustomText style={[styles.cardAmount, {color: 'tomato'}]}>
-              ₹1200
+              ₹{totalSpending}
             </CustomText>
           </View>
           <View style={[styles.card, {backgroundColor: cardBg}]}>
@@ -211,7 +278,7 @@ const Home = () => {
               Monthly Spending
             </CustomText>
             <CustomText style={[styles.cardAmount, {color: 'tomato'}]}>
-              ₹300
+              ₹{monthlySpending}
             </CustomText>
           </View>
         </View>
